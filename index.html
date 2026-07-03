@@ -1,1 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PORT 81 → 27 → 3 → MAXI</title>
+</head>
+
+<body>
+
+<h1>PORT System</h1>
+<input id="txt" placeholder="Input">
+<button id="run">RUN PORT</button>
+<pre id="out"></pre>
+
+<script type="module">
+  import { PORT_81 } from "./port.js";
+  import { MAXI } from "./maxi.js";
+
+  document.getElementById("run").addEventListener("click", () => {
+    const msg = document.getElementById("txt").value;
+
+    const p81 = PORT_81(msg);
+    const maxi = MAXI(p81.achsen, msg);
+
+    const out = { p81, maxi };
+
+    document.getElementById("out").textContent =
+      JSON.stringify(out, null, 2);
+  });
+</script>
+
+</body>
+</html>
 
