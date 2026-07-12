@@ -1,16 +1,16 @@
-// maxi.js — MAXI (2-fach)
+// maxi.js — MAXI System
 
-export function MAXI(achsen, msg) {
-    const text = String(msg || "");
-
+export function MAXI(achsen, input) {
     return {
         ok: true,
         sys: "MAXI",
-        input: text,
-        maxi: {
-            mode1: achsen,
-            mode2: achsen
+        input,
+        len: input.length,
+        axisCount: {
+            A: achsen.A.length,
+            B: achsen.B.length,
+            C: achsen.C.length
         },
-        time: Date.now()
+        stamp: Date.now()
     };
 }
