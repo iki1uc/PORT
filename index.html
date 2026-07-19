@@ -2,81 +2,66 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>PORT 81 → 27 → 3 → MAXI · Upgrade</title>
+<title>PORT · Zentrum · MA³‑Achsen · VERIFY‑Fusion</title>
 
 <style>
-body {
-  background:#111;
-  color:#0f0;
-  font-family:Consolas, monospace;
-  padding:20px;
-}
-h1 { color:#6f6; }
-input {
-  width:300px;
-  padding:8px;
-  background:#222;
-  color:#0f0;
-  border:1px solid #444;
-}
-button {
-  padding:8px 14px;
-  background:#0f0;
-  color:#000;
-  border:none;
-  font-weight:bold;
-  cursor:pointer;
-}
-button:hover { background:#9f9; }
-pre {
-  background:#000;
-  padding:15px;
-  border:1px solid #333;
-  margin-top:20px;
-  color:#0f0;
-  overflow:auto;
-}
-.axis {
-  margin-top:20px;
-  padding:10px;
-  background:#222;
-  border:1px solid #333;
-}
-.axis h2 { margin:0 0 10px 0; }
-.A { color:#33ffff; }
-.B { color:#ff33ff; }
-.C { color:#ffff33; }
+  body { background:#000; color:#0f0; font-family:Consolas; padding:20px; }
+  h1, h2 { color:#6cf; }
+  .block { background:#111; border:1px solid #333; padding:15px; margin:20px 0; }
+  pre { background:#000; border:1px solid #333; padding:12px; }
+  input {
+    width:300px; padding:8px; background:#222; color:#0f0; border:1px solid #444;
+  }
+  button {
+    padding:8px 14px; background:#0f0; color:#000; border:none;
+    font-weight:bold; cursor:pointer;
+  }
+  button:hover { background:#9f9; }
+  .A { color:#33ffff; }
+  .B { color:#ff33ff; }
+  .C { color:#ffff33; }
 </style>
-</head>
-
-<body>
-
-<h1>PORT System · Upgrade</h1>
-
-<input id="txt" placeholder="Input">
-<button id="run">RUN PORT</button>
-
-<div id="axisA" class="axis A"></div>
-<div id="axisB" class="axis B"></div>
-<div id="axisC" class="axis C"></div>
-
-<pre id="out"></pre>
 
 <script type="module">
 import { PORT_81 } from "./port.js";
 import { MAXI } from "./maxi.js";
 
-document.getElementById("run").addEventListener("click", () => {
+// ------------------------------------------------------
+// VERIFY.html LADEN
+// ------------------------------------------------------
+async function loadVerify(){
+  try{
+    const res = await fetch("./verify.html");
+    const text = await res.text();
+
+    const modeMatch = text.match(/PORT siedelt sich dieses Mal unter:\s*(.*)/);
+    const mode = modeMatch ? modeMatch[1].trim() : "N/A";
+
+    const metaMatch = text.match(/Achse A[\s\S]*?Achse C/);
+    const meta = metaMatch ? metaMatch[0].trim() : "N/A";
+
+    document.getElementById("verifyMode").textContent = mode;
+    document.getElementById("verifyMeta").textContent = meta;
+    document.getElementById("verifyStatus").textContent = "verify.html geladen ✓";
+  }catch(e){
+    document.getElementById("verifyStatus").textContent = "verify.html fehlt ✗";
+    document.getElementById("verifyMode").textContent = "N/A";
+    document.getElementById("verifyMeta").textContent = "N/A";
+  }
+}
+
+// ------------------------------------------------------
+// PORT‑RUN
+// ------------------------------------------------------
+function runPORT(){
   const msg = document.getElementById("txt").value;
 
   const p81 = PORT_81(msg);
   const maxi = MAXI(p81.achsen, msg);
 
-  // JSON-Ausgabe
   document.getElementById("out").textContent =
     JSON.stringify({ p81, maxi }, null, 2);
 
-  // Achsen-Ausgabe
   document.getElementById("axisA").innerHTML =
     `<h2>Achse A (27)</h2>${p81.achsen.A.map(x => x.id).join(", ")}`;
 
@@ -85,8 +70,49 @@ document.getElementById("run").addEventListener("click", () => {
 
   document.getElementById("axisC").innerHTML =
     `<h2>Achse C (27)</h2>${p81.achsen.C.map(x => x.id).join(", ")}`;
-});
+}
+
+// ------------------------------------------------------
+// START
+// ------------------------------------------------------
+window.onload = loadVerify;
 </script>
+
+</head>
+
+<body>
+
+<h1>PORT · Zentrum · MA³‑Achsen</h1>
+
+<div class="block">
+  <h2>VERIFY‑Status</h2>
+  <pre id="verifyStatus">Lade verify.html…</pre>
+</div>
+
+<div class="block">
+  <h2>ARG‑Modus (aus verify.html)</h2>
+  <pre id="verifyMode">…</pre>
+</div>
+
+<div class="block">
+  <h2>Achsen‑Meta‑Analyse (aus verify.html)</h2>
+  <pre id="verifyMeta">…</pre>
+</div>
+
+<div class="block">
+  <h2>PORT‑Input</h2>
+  <input id="txt" placeholder="Input">
+  <button onclick="runPORT()">RUN PORT</button>
+</div>
+
+<div id="axisA" class="block A"></div>
+<div id="axisB" class="block B"></div>
+<div id="axisC" class="block C"></div>
+
+<div class="block">
+  <h2>PORT‑81 → 27 → 3 → MAXI</h2>
+  <pre id="out"></pre>
+</div>
 
 </body>
 </html>
