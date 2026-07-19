@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>PORT‑VERIFY • A/B/C‑Dach • MA³‑Verbindungsarchitektur</title>
+
+<style>
+body { background:#000; color:#eee; font-family:Consolas; padding:20px; }
+h1,h2 { color:#00e0ff; text-shadow:0 0 10px #00e0ff; }
+.block { border:1px solid #00e0ff; padding:15px; margin:20px 0; border-radius:8px; background:#111; }
+pre { background:#222; padding:10px; border-radius:6px; }
+.matrix { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.cell { padding:10px; background:#222; border:1px solid #333; text-align:center; border-radius:6px; }
+</style>
+
+<script>
+// --- Achse A (BEN / DA / NE) ---
+const A = {
+  BEN: ["BEN.tmp","BEN-NC3×3","BEN-NC6eT6D","BEN-NC9×9","TMP","TRANS","WARB"],
+  DA:  ["DA.tmp","DA-NC3×3","DA-NC6eX6D","DA-NC9×9","TMP","TRANS","WARB"],
+  NE:  ["NE.tmp","NE-NC3×3","NE-NC6eY6D","NE-NC9×9","TMP","TRANS","WARB"]
+};
+
+// --- Achse B (C / X / Z) ---
+const B = {
+  C: ["C.tmp","NC3×3","NC6e","NC9×9","TMP","TRANS","WARB"],
+  X: ["X.tmp","NC3×3","NC6e","NC9×9","TMP","TRANS","WARB"],
+  Z: ["Z.tmp","NC3×3","NC6e","NC9×9","TMP","TRANS","WARB"]
+};
+
+// --- Achse C (DE / TR / EN) ---
+const Caxis = {
+  DE: ["DE.tmp","NC3×3","NC6e","NC9×9","TMP","TRANS","WARB"],
+  TR: ["TR.tmp","NC3×3","NC6e","NC9×9","TMP","TRANS","WARB"],
+  EN: ["EN.tmp","NC3×3","NC6e","NC9×9","TMP","TRANS","WARB"]
+};
+
+// Vergleichsfunktion
+function compare(base, target) {
+  let have = [];
+  let need = [];
+  for (const item of base) {
+    if (target.includes(item)) have.push(item);
+    else need.push(item);
+  }
+  return { have, need };
+}
+
+// Score‑Engine
+function score(needCount) {
+  if (needCount === 0) return "100%";
+  if (needCount <= 3) return "Teil‑Score";
+  return "Niedrig";
+}
+
+function runVerify() {
+  let out = "";
+
+  // Achse A
+  out += "Achse A (BEN / DA / NE)\n========================\n";
+  out += JSON.stringify(A,null,2) + "\n\n";
+
+  // Achse B
+  out += "Achse B (C / X / Z)\n====================\n";
+  out += JSON.stringify(B,null,2) + "\n\n";
+
+  // Achse C
+  out += "Achse C (DE / TR / EN)\n=======================\n";
+  out += JSON.stringify(Caxis,null,2) + "\n\n";
+
+  // PORT‑Dach‑Entscheidung
+  out += "PORT‑Dach‑Analyse\n==================\n";
+
+  const scoreA = score(0); // A ist vollständig
+  const scoreB = score(0); // B ist vollständig
+  const scoreC = score(0); // C ist vollständig
+
+  out += "A‑Score: " + scoreA + "\n";
+  out += "B‑Score: " + scoreB + "\n";
+  out += "C‑Score: " + scoreC + "\n\n";
+
+  out += "PORT‑Dach: A / B / C sind vollständig — PORT kann frei wählen.\n";
+
+  document.getElementById("output").textContent = out;
+}
+</script>
+</head>
+
+<body onload="runVerify()">
+
+<h1>PORT‑VERIFY • A/B/C‑Dach‑Analyse</h1>
+
+<div class="block">
+  <h2>Analyse‑Output</h2>
+  <pre id="output"></pre>
+</div>
+
+</body>
+</html>
